@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>Customers</h2>
+<!--Add Jquery Datatable reference files-->
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css" />
+<div style="width:90%;">
+
+    <a class="popup btn btn-primary" href="/Customer/save/0" style="margin-bottom: 20px; margin-top: 20px;">Add Customer</a>
+
+    <table id="Jdatatable" class="table table-responsive table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Address</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@section scripts{
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#Jdatatable").DataTable({
+                "ajax": {
+                    "url": "/Customer/GetData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "customerId", "autoWidth": true },
+                    { "data": "customerName", "autoWidth": true },
+                    { "data": "customerAge", "autoWidth": true },
+                    { "data": "customerAddress", "autoWidth": true },
+
+                    //New code below
+
+                    {
+                        "data": "customerId", "width": "50px", "render": function (data) {
+                            return '<a class="popup" href="/Customer/Save/' + data + '">Edit</a>';
+                        }
+                    },
+                    {
+                        "data": "customerId", "width": "50px", "render": function (data) {
+                            return '<a class="popup" href="/Customer/Delete/' + data + '">Delete</a>';
+                        }
+                    }
+                ]
+            })
+
+            $('.tablecontainer').on('click', 'a.popup', function (e) {
+                e.preventDefault();
+                OpenPopup($(this).attr('href'));
+            })
+            function OpenPopup(pageUrl) {
+                var $pageContent = $('<div/>');
+                $pageContent.load(pageUrl, function () {
+                    $('#popupForm', $pageContent).removeData('validator');
+                    $('#popupForm', $pageContent).removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse('form');
+
+                });
+
+                $dialog = $('<div class="popupWindow" style="overflow:auto"></div>')
+                    .html($pageContent)
+                    .dialog({
+                        draggable: false,
+                        autoOpen: false,
+                        resizable: false,
+                        model: true,
+                        title: 'Popup Dialog',
+                        height: 550,
+                        width: 600,
+                        close: function () {
+                            $dialog.dialog('destroy').remove();
+                        }
+                    })
+
+                $('.popupWindow').on('submit', '#popupForm', function (e) {
+                    var url = $('#popupForm')[0].action;
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#popupForm').serialize(),
+                        success: function (data) {
+                            if (data.status) {
+                                $dialog.dialog('close');
+                                oTable.ajax.reload();
+                            }
+                        }
+                    })
+
+                    e.preventDefault();
+                })
+                $dialog.dialog('open');
+            }
+        });
+
+    </script>
+
+
+
+
+}

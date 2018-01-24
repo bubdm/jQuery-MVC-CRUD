@@ -1,0 +1,46 @@
+﻿@model OnboardingjQuery.Models.CustomerTable
+
+
+<h2>Add / Save</h2>
+@using (Html.BeginForm("Save", "Customer", FormMethod.Post, new { id = "popupForm" }))
+{
+    @*if (Model != null && Model.Id > 0)
+        {
+            @Html.HiddenFor(a => a.Id)
+        }*@
+
+    <div class="form-group">
+        <label>Id</label>
+        @Html.TextBoxFor(a => a.customerId, new { @class = "form-control",@readonly = "true" })
+        @Html.ValidationMessageFor(a => a.customerId)
+    </div>
+
+    <div class="form-group">
+        <label>Name</label>
+        @Html.TextBoxFor(a => a.customerName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.customerName)
+    </div>
+
+    <div class="form-group">
+        <label>Age</label>
+        @Html.TextBoxFor(a => a.customerAge, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.customerAge)
+    </div>
+
+    <div class="form-group">
+        <label>Address</label>
+        @Html.TextBoxFor(a => a.customerAddress, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.customerAddress)
+    </div>
+
+
+    <div>
+        <input type="submit" value="Save" />
+        @Html.ActionLink("Back to List", "Index")
+
+
+    </div>
+}
+
+
+
